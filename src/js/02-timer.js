@@ -1,9 +1,16 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
-const inputField = document.getElementById('datetime-picker');
-const startBtn = document.querySelector('[data-start]');
-console.log(startBtn);
+const refs = {
+  inputField: document.getElementById('datetime-picker'),
+  startBtn: document.querySelector('[data-start]'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+}
+
+refs.startBtn.disabled = true;
 
 const options = {
   enableTime: true,
@@ -11,11 +18,20 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    selectedDates = selectedDates[0].getTime();
+    console.log(new Date());
+    if (selectedDates <= new Date()) {
+      window.alert('Please choose a date in the future');
+    } else {
+      window.alert('You choose valid data');
+      refs.startBtn.disabled = false;
+    }
   },
 };
 
-flatpickr(inputField, options)
+//  console.log(Date()),
+
+flatpickr(refs.inputField, options)
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -36,6 +52,10 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+function addLeadingZero(value) { 
+return String(value).padStart(2, '0');
+}
+
+// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
+// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
+// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
