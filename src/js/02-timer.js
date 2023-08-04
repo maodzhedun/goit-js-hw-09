@@ -1,5 +1,6 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import Notiflix from "notiflix";
 
 const refs = {
   inputField: document.getElementById('datetime-picker'),
@@ -10,28 +11,53 @@ const refs = {
   seconds: document.querySelector('[data-seconds]'),
 }
 
+const { days, hours, minutes, seconds } = refs;
+
+refs.startBtn.addEventListener('click', startTimer, {once: true});
 refs.startBtn.disabled = true;
+
+let selectedDate  = null;
 
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
+  
   onClose(selectedDates) {
-    selectedDates = selectedDates[0].getTime();
-    console.log(new Date());
-    if (selectedDates <= new Date()) {
-      window.alert('Please choose a date in the future');
+    selectedDate = selectedDates[0].getTime();
+    if (selectedDate <= new Date()) {
+      Notiflix.Report.failure('Please choose a date in the future', '');
+      refs.startBtn.disabled = true;
     } else {
-      window.alert('You choose valid data');
+      Notiflix.Report.success('You choose valid data', '');  
       refs.startBtn.disabled = false;
     }
   },
 };
 
-//  console.log(Date()),
+//init function
+flatpickr(refs.inputField, options);
 
-flatpickr(refs.inputField, options)
+function startTimer() {
+  const intervalId = setInterval(() => {
+    const deltaTime = selectedDate - Date.now();
+    const timeComponents = convertMs(deltaTime);
+    if (deltaTime <= 1000) { 
+      clearInterval(intervalId);
+    }
+    timer(timeComponents);
+
+
+  }, 1000);
+}
+
+function timer(elements) { 
+  days.textContent = addLeadingZero(elements.days);
+  hours.textContent = addLeadingZero(elements.hours);
+  minutes.textContent = addLeadingZero(elements.minutes);
+  seconds.textContent = addLeadingZero(elements.seconds);
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -53,7 +79,7 @@ function convertMs(ms) {
 }
 
 function addLeadingZero(value) { 
-return String(value).padStart(2, '0');
+return String(value).padStart(2, 0);
 }
 
 // console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
