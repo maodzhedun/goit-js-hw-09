@@ -8,10 +8,9 @@ const body = document.querySelector('body');
 let timerId = null;
 
 startBtn.addEventListener("click", () => {
+  startBtn.disabled = true;
   timerId = setInterval(() => {
-    if (timerId !== null) {
-      startBtn.disabled = true;
-    } body.style.backgroundColor = getRandomHexColor();
+     body.style.backgroundColor = getRandomHexColor();
   }, 1000);
 });
 
